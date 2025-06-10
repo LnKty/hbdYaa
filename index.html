@@ -59,15 +59,11 @@
 
    <script>
     function tampilkanGaleri() {
-      document.getElementById("kontenUlangTahun").style.display = "block";
-      document.querySelector("button").style.display = "none";
-      document.getElementById("text").style.display = "none";
+  document.getElementById("kontenUlangTahun").style.display = "block";
+  document.querySelector("button").style.display = "none";
+  document.getElementById("text").style.display = "none";
 
-
-      // 🔊 Putar musik
-  
-
-  // 🎉 Confetti animasi
+  // Animasi confetti
   const duration = 5 * 1000;
   const animationEnd = Date.now() + duration;
   const canvas = document.querySelector('canvas.confetti');
@@ -93,74 +89,67 @@
   }
   frame();
 
+  // 🧲 Drag aktif setelah konten muncul
+  const images = document.querySelectorAll('.stack-img');
+  let draggedImg = null;
+  let offsetX = 0;
+  let offsetY = 0;
 
-    }
-    
-    
-  
-    
+  images.forEach(img => {
+    img.addEventListener('mousedown', dragMulaiMouse);
+    img.addEventListener('touchstart', dragMulaiSentuh);
+  });
 
+  function dragMulaiMouse(e) {
+    draggedImg = e.target;
+    offsetX = e.clientX - draggedImg.offsetLeft;
+    offsetY = e.clientY - draggedImg.offsetTop;
+    draggedImg.style.cursor = "grabbing";
+    draggedImg.style.zIndex = 99;
 
+    document.addEventListener('mousemove', dragMouse);
+    document.addEventListener('mouseup', dragSelesaiMouse);
+  }
 
-  // === Untuk mouse ===
-images.forEach(img => {
-  img.addEventListener('mousedown', dragMulaiMouse);
-  img.addEventListener('touchstart', dragMulaiSentuh); // tambahan
-});
+  function dragMouse(e) {
+    if (!draggedImg) return;
+    draggedImg.style.left = (e.clientX - offsetX) + 'px';
+    draggedImg.style.top = (e.clientY - offsetY) + 'px';
+  }
 
-let draggedImg = null;
-let offsetX = 0;
-let offsetY = 0;
+  function dragSelesaiMouse() {
+    if (draggedImg) draggedImg.style.cursor = "grab";
+    draggedImg = null;
 
-function dragMulaiMouse(e) {
-  draggedImg = e.target;
-  offsetX = e.clientX - draggedImg.offsetLeft;
-  offsetY = e.clientY - draggedImg.offsetTop;
-  draggedImg.style.cursor = "grabbing";
-  draggedImg.style.zIndex = 99;
+    document.removeEventListener('mousemove', dragMouse);
+    document.removeEventListener('mouseup', dragSelesaiMouse);
+  }
 
-  document.addEventListener('mousemove', dragMouse);
-  document.addEventListener('mouseup', dragSelesaiMouse);
+  function dragMulaiSentuh(e) {
+    draggedImg = e.target;
+    const touch = e.touches[0];
+    offsetX = touch.clientX - draggedImg.offsetLeft;
+    offsetY = touch.clientY - draggedImg.offsetTop;
+    draggedImg.style.zIndex = 99;
+
+    document.addEventListener('touchmove', dragSentuh);
+    document.addEventListener('touchend', dragSelesaiSentuh);
+  }
+
+  function dragSentuh(e) {
+    if (!draggedImg) return;
+    const touch = e.touches[0];
+    draggedImg.style.left = (touch.clientX - offsetX) + 'px';
+    draggedImg.style.top = (touch.clientY - offsetY) + 'px';
+  }
+
+  function dragSelesaiSentuh() {
+    draggedImg = null;
+    document.removeEventListener('touchmove', dragSentuh);
+    document.removeEventListener('touchend', dragSelesaiSentuh);
+  }
 }
 
-function dragMouse(e) {
-  if (!draggedImg) return;
-  draggedImg.style.left = (e.clientX - offsetX) + 'px';
-  draggedImg.style.top = (e.clientY - offsetY) + 'px';
-}
-
-function dragSelesaiMouse() {
-  if (draggedImg) draggedImg.style.cursor = "grab";
-  draggedImg = null;
-
-  document.removeEventListener('mousemove', dragMouse);
-  document.removeEventListener('mouseup', dragSelesaiMouse);
-}
-
-// === Untuk sentuhan (Android / layar sentuh) ===
-function dragMulaiSentuh(e) {
-  draggedImg = e.target;
-  const touch = e.touches[0];
-  offsetX = touch.clientX - draggedImg.offsetLeft;
-  offsetY = touch.clientY - draggedImg.offsetTop;
-  draggedImg.style.zIndex = 99;
-
-  document.addEventListener('touchmove', dragSentuh);
-  document.addEventListener('touchend', dragSelesaiSentuh);
-}
-
-function dragSentuh(e) {
-  if (!draggedImg) return;
-  const touch = e.touches[0];
-  draggedImg.style.left = (touch.clientX - offsetX) + 'px';
-  draggedImg.style.top = (touch.clientY - offsetY) + 'px';
-}
-
-function dragSelesaiSentuh() {
-  draggedImg = null;
-  document.removeEventListener('touchmove', dragSentuh);
-  document.removeEventListener('touchend', dragSelesaiSentuh);
-}
 
 
 
