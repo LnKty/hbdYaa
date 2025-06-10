@@ -102,42 +102,66 @@
 
 
 
-    const images = document.querySelectorAll('.stack-img');
-    images.forEach(img => {
-      img.addEventListener('mousedown', dragMulai);
-    });
+  // === Untuk mouse ===
+images.forEach(img => {
+  img.addEventListener('mousedown', dragMulaiMouse);
+  img.addEventListener('touchstart', dragMulaiSentuh); // tambahan
+});
 
-    let draggedImg = null;
-    let offsetX = 0;
-    let offsetY = 0;
+let draggedImg = null;
+let offsetX = 0;
+let offsetY = 0;
 
-    function dragMulai(e) {
-      draggedImg = e.target;
-      offsetX = e.clientX - draggedImg.offsetLeft;
-      offsetY = e.clientY - draggedImg.offsetTop;
-      draggedImg.style.cursor = "grabbing";
+function dragMulaiMouse(e) {
+  draggedImg = e.target;
+  offsetX = e.clientX - draggedImg.offsetLeft;
+  offsetY = e.clientY - draggedImg.offsetTop;
+  draggedImg.style.cursor = "grabbing";
+  draggedImg.style.zIndex = 99;
 
-      // Naikkan z-index agar berada di atas saat digeser
-      draggedImg.style.zIndex = 99;
+  document.addEventListener('mousemove', dragMouse);
+  document.addEventListener('mouseup', dragSelesaiMouse);
+}
 
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', dragSelesai);
-    }
+function dragMouse(e) {
+  if (!draggedImg) return;
+  draggedImg.style.left = (e.clientX - offsetX) + 'px';
+  draggedImg.style.top = (e.clientY - offsetY) + 'px';
+}
 
-    function drag(e) {
-      if (!draggedImg) return;
-      draggedImg.style.left = (e.clientX - offsetX) + 'px';
-      draggedImg.style.top = (e.clientY - offsetY) + 'px';
-    }
+function dragSelesaiMouse() {
+  if (draggedImg) draggedImg.style.cursor = "grab";
+  draggedImg = null;
 
-    function dragSelesai() {
-      if (draggedImg) {
-        draggedImg.style.cursor = "grab";
-        draggedImg = null;
-      }
-      document.removeEventListener('mousemove', drag);
-      document.removeEventListener('mouseup', dragSelesai);
-    }
+  document.removeEventListener('mousemove', dragMouse);
+  document.removeEventListener('mouseup', dragSelesaiMouse);
+}
+
+// === Untuk sentuhan (Android / layar sentuh) ===
+function dragMulaiSentuh(e) {
+  draggedImg = e.target;
+  const touch = e.touches[0];
+  offsetX = touch.clientX - draggedImg.offsetLeft;
+  offsetY = touch.clientY - draggedImg.offsetTop;
+  draggedImg.style.zIndex = 99;
+
+  document.addEventListener('touchmove', dragSentuh);
+  document.addEventListener('touchend', dragSelesaiSentuh);
+}
+
+function dragSentuh(e) {
+  if (!draggedImg) return;
+  const touch = e.touches[0];
+  draggedImg.style.left = (touch.clientX - offsetX) + 'px';
+  draggedImg.style.top = (touch.clientY - offsetY) + 'px';
+}
+
+function dragSelesaiSentuh() {
+  draggedImg = null;
+  document.removeEventListener('touchmove', dragSentuh);
+  document.removeEventListener('touchend', dragSelesaiSentuh);
+}
+
 
 
 
