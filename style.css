@@ -4,6 +4,8 @@ body{
     justify-content: center;
     align-items: center !important;
     flex-direction: column !important;
+    overscroll-behavior: none;
+      touch-action: none;
 }
 
 
